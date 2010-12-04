@@ -1,0 +1,138 @@
+---
+title: Prote.cs introduction
+section: Prote.cs
+
+# top javascript for development, bottom javascript for production
+javascripts: 
+  - "/javascripts/protovis.js"
+  - "/javascripts/mvp/mvp.js"
+  - "Three.js"
+  - "models.js"
+  - "views.js"
+  - "overview_data.js"
+  - "overview_main.js"
+javascripts:
+  - "/javascripts/protovis.js"
+  - "prote_cs.js"
+stylesheets:
+  - "overview.css"
+
+sidebar: |
+  December 2010
+
+  Prote.cs is compressed sensing / sparse representation applied to protein structure search. Also: rockin' JavaScript for science.
+  
+  *Overview*
+
+  [Methods/Results](results/)
+
+  [Bibliography](bibliography/)
+
+  [Github repo](http://github.com/lynaghk/prote.cs/)
+
+---
+
+:Markdown
+  Abstract
+  ========
+  We consider the problem of recognizing a protein domain's fold from its 3D structure.
+  Using the alpha carbon distance matrix as a co&ouml;rdinate free representation, we cast the fold recognition problem as a linear regression within a basis derived from a corpus of protein structures.
+  Employing an $l^1$-norm based regression yields a sparse representation amendable to classification.
+  We test the proposed fold recognition scheme on a subset of topology families in the [CATH hiearchy](http://www.cathdb.info/).
+  Within the 466 CATH topology families having at least three structures, our method correctly assigns the topology class of test domains with an accuracy of 90%.
+
+
+  Overview
+  ========
+  This page describes an algorithm for quickly determining a protein's fold.
+  As far as I am aware, this is the first application of recent ideas from the field of compressed sensing / sparse representation to the problem of protein fold recognition.
+  If you have any questions or ideas, feel free to contact me: [kevin@dirigibleFlightcraft.com](mailto:kevin@dirigibleFlightcraft.com).
+  Both the search algorithm implementation and the code powering this this writeup are available on Github.
+  
+  The protein search algorithm consists of two stages; an indexing stage and the search itself.
+  The "index" is a fixed matrix constructed from representative protein structures from known families (steps 1. & 2. below).
+  To search this index for the fold of a test protein, compressed sensing signal reconstruction ideas are used (step 3. below).
+  
+
+
+  
+  
+
+
+  1. Construct distance matrix
+  ----------------------------
+
+.fullpage_fig
+  #dm_example
+  #dm_3d
+:Markdown
+  This is the distance matrix of CATH domain [1beaA00](http://www.cathdb.info/domain/1beaA00) (darker indicates closer residue pairs).
+  Mouseover the distance matrix to highlight the residues at the position.
+  Note that thick sections of the diagonal on the distance matrix correspond to $\alpha$-helices, and perpendiculars from the diagonal indicate turns/sheets.
+
+  The alpha carbon distance matrix $\mat M$ of a protein is the real, nonnegative symmetric matrix where element $i,j$ is the Euclidean distance between the $i$th and $j$th residues in the protein's crystal structure.
+  A protein with $n$ residues has an $n \times n$ distance matrix.
+  This is a coordinate-free representation of the protein's structure, and provides enough information to reconstruct (up to handedness) the full 3D structure.
+
+
+  
+
+
+:Markdown
+  2. Construct dictionary
+  ----------------------
+.sidenote
+  :Markdown
+    Resizing the distance matrices is both feature extraction and dimensionality reduction; we project the distance matrix of an $n$-residue protein, $\vec v$, from $\real^d, d = \tfrac{1}{2} n(n-1)$ down to $\real^m, m = \tfrac{1}{2} s(s-1)$, where $s$ is the parameter specifying the resized distance matrix.
+    Each column of $\mat D$ is scaled to have unit $l^2$ norm.
+    Also note that, since the distance matrix is symmetric and its diagonal trivially zero, all the information we need is in the lower triangle.
+    
+:Markdown
+  To compare the distance matrices of different proteins, we resize them to a much smaller, fixed width ($10 \times 10$ rather than $\sim 300 \times 300$).
+  We then construct a "dictionary" of protein structures, where each column is a protein distance matrix (the distance matrix is converted to a vector by simply stacking the rows).
+  Resizing and stacking the distance matrices yields vectors with dimension on the order of $10^2$.
+  The columns are organized by fold family (color, below), with 5--10 representatives per family.
+
+.inlineFig
+  %div{:style => "zoom: 250%; float: left; margin-right: 0.5em;"}
+    \\[
+    \\mat D =
+    \\]
+  #dictionary{:style => "float: left; margin-right: 0.5em;"}
+  %div{:style => "zoom: 250%; float: left;"}
+    \\[
+    \\ldots
+    \\]
+:Markdown
+  3. Search folds
+  ---------------
+  When we want to find the fold family of some new protein, we calculate its distance matrix as above, resizing and stacking it to get the vector representation, $\vec y$.
+  Then we ask the following question;
+  
+  > Which proteins from the dictionary $\mat D$ sum to best represent $\vec y$?
+  
+  Essentially, we assume that the new protein $\vec y$ can be expressed as a linear combination of proteins having the same fold.
+  More specifically, we solve
+.inlineFig
+  %div{:style => "zoom: 150%; margin-top: -2em; margin-bottom: -2em;"}
+    \\[
+    \\mathrm{min} \norm{\vec x}_{1} \quad \mbox{such that} \quad \norm{\mat D \vec x - \vec y}_{2} \lt \epsilon,
+    \\]
+:Markdown
+  where $\epsilon$ is a small constant.
+  Since $\mat D$ has more columns than rows, the system $\vec y = \mat D \vec x$ is underdetermined.
+  However, we expect the solution $\vec x$ to be *sparse*; only the 5--10 coefficients of $\vec x$ corresponding to $\vec y$'s fold family should be large.
+  To find this solution we minimize the $l^1$ norm, a popular trick from the new field of *compressed sensing*.
+  
+  Once we have $\vec x$, we find the fold family that best represents it (i.e. has the smallest $l^2$ residual);
+.inlineFig
+  %div{:style => "zoom: 150%; margin-top: -2em; margin-bottom: -2em;"}
+    \\[
+    \\mathrm{class} \left( \vec y \right) = \textrm{argmin}_{i} \norm{\vec y - \mat D \delta_{i}\!\left(\vec x\right)}_{2},
+    \\]
+:Markdown
+  where $\delta_i\left(\vec x\right)$ sets all of the coefficients that do *not* correspond to fold $i$ to zero.
+
+%span{:style => "float: right; font: 32px sans-serif;"}
+  %a{:href => "results/"}
+    Methods/Results &rarr;

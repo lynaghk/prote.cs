@@ -1,0 +1,55 @@
+---
+title: Prote.cs bibliography
+section: Bibliography
+sidebar: |
+
+  December 2010
+
+  [Overview](../index.html)
+
+  [Methods/Results](../results/)
+
+  *Bibliography*
+
+  [Github repo](http://github.com/lynaghk/prote.cs/)
+
+---
+:Markdown
+  The primary inspiration for this project was a paper that used compressed sensing for face recognition:
+
+.bib_entry
+  %span.title Robust face recognition via sparse representation
+  %span.authors Wright, John and Yang, Allen Y. and Ganesh, Arvind and Sastry, S. Shankar and Ma, Yi
+  %span.journal IEEE Transactions on Pattern Analysis and Machine Intelligence (PAMI)
+  %span.year 2008
+
+:Markdown
+  (available at their [research group webpage](http://perception.csl.uiuc.edu/recognition/References.html))
+
+  We used a modified version of [YALL1](/YALL1/) to solve the optimization problem.
+
+  The figures are written in the [Protovis language](http://vis.stanford.edu/protovis/), and the 3D protein view is powered by Mr. Doob's [three.js](https://github.com/mrdoob/three.js/) JavaScript rendering engine.
+
+  Future Directions
+  =================
+
+  There are several possible extensions for this work.
+  With respect to the search accuracy, it is very likely that performance can be greatly enhanced using dictionary learning techniques.
+  In this work, we simply solved the problem $\mathrm{min} \norm{\vec x}_{1}$ with $\norm{\mat D \vec x - \vec y}_{2} \lt \epsilon$.
+  But our task is classification, and explicitly optimizing for this (rather than against the $l^2$ residual constraint) may well improve performance.
+  That is, we should give up representational power from the dictionary (get solutions with larger residuals) in exchange for greater discriminative power.
+  Techniques for such *supervised dictionary learning* are being actively researched; see [this paper](http://www.di.ens.fr/willow/pdfs/CVPR08d.pdf) or [this one](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.154.4185&rep=rep1&type=pdf).
+
+.sidenote
+  :Markdown
+    There exist two programs for predicting individual contacts: [SVMcon](http://www.biomedcentral.com/1471-2105/8/113/abstract/) and [NNcon](http://nar.oxfordjournals.org/content/37/suppl_2/W515.long) (based on support vector machines and neural networks, respectively).
+
+:Markdown
+  What is perhaps more interesting than the fold search itself is the demonstration that 20-dimensional vectors contain enough information to accurately determine a protein domain's fold.
+  The resized distance matrix representation of protein structure may to be an easier target for structure prediction algorithms.
+  Rather than predicting individual contacts, machine learning algorithms only need to estimate an aggregate quantity; the average distance between these 15 residues.
+  
+  If you have specific questions or ideas for research directions, contact me or (even better) fork the project and start exploring them immediately.
+%span{:style => "float: right; font: 32px sans-serif;"}
+  %a{:href => "http://github.com/lynaghk/prote.cs/"}
+    Github repository &rarr;

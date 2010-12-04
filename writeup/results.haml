@@ -1,0 +1,67 @@
+---
+title: Prote.cs methods/results
+section: Methods/Results
+javascripts:
+  - "/javascripts/protovis.js"
+  - "/javascripts/mvp/mvp.js"
+  - "results_data.js"
+  - "charts.js"
+  - "results_main.js"
+javascripts:
+  - "/javascripts/protovis.js"
+  - "results.js"
+sidebar: |
+
+  December 2010
+
+  [Overview](../index.html)
+
+  *Methods/Results*
+
+  [Bibliography](../bibliography/)
+
+  [Github repo](http://github.com/lynaghk/prote.cs/)
+
+---
+
+.sidenote
+  :Markdown
+:Markdown
+  This compressed-sensing distance matrix approach to protein fold recognition was tested using sets of fold families from the [CATH database](http://www.cathdb.info/).
+  Only fully-resolved protein domain structures (no missing residues) with length between 100--400 residues were considered.
+  CATH v3.3 lists 1288 distinct fold families, but only 562 meet these criteria.
+  Recognition accuracy was assessed by the following method:
+
+  1. select all the fold families having at least $n$ domains
+  2. construct a dictionary using at most $s$ randomly selected domains from each fold $(s \ge n)$
+  3. hold out one domain from each family and classify them using the remaining domains as the dictionary
+  
+  with the third step repeated five times for each dimensionality.
+
+  There are 466 CATH fold families with at least three domains ($n=3$), and we ran the search algorithm while varying $s$, the number of samples per family:
+  
+.inlineFig
+  %span.chartTitle{:style => "float: center; width: 16em;"}
+    Recognition accuracy (466 fold families)
+  %span.yLabel{:style => "float: left; margin-top: 15em; width: 2em;"}
+    Recognition accuracy
+  #results_scatterplot{:style => "float: right;"}
+  %span{:style => "float: left; clear: both; margin-left: 20em;"}
+    Dimensionality
+
+:Markdown
+  Notice that using at most 20 samples per fold (<script type="text/javascript">dot(3);</script>), the algorithm has a 95% classification accuracy rate at just 21 dimensions.
+  Compare this to the baseline, random-guess accuracy of 1/466 = 0.2%.
+  Essentially, a six-by-six pixel thumbnail of a protein's distance matrix is distinctive enough to determine its fold 95% of the time.
+  Furthermore, there is no substantial improvement at higher dimensions, suggesting that the intrinsic dimensionality of the space of protein folds is only around twenty. 
+  Even when the support of each family is restricted to *two* representatives out of the 932 dictionary atoms (<script type="text/javascript">dot(0);</script>), the accuracy is still greater than 80%.
+
+  The runtime of the algorithm depends on the reconstruction difficulty (the number of samples per class $s$ in the dictionary).
+  On a Linux virtual machine running on a 2.8 GHz core with 1 GB RAM, this was about 0.3--1 seconds per protein.
+  This figure includes distance matrix calculation (i.e. dictionary construction) time; the classification time itself is less.
+  
+
+
+%span{:style => "float: right; font: 32px sans-serif;"}
+  %a{:href => "../bibliography/"}
+    Bibliography &rarr;

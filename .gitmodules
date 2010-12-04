@@ -1,0 +1,3 @@
+[submodule "software/YALL1"]
+	path = software/YALL1
+	url = http://github.com/lynaghk/YALL1.git
