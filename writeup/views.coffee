@@ -28,6 +28,10 @@ class Distance_matrix_view extends View
     dm_image.event 'mousemove', ->
       #get the browser click event from protovis so we can calculate the cell clicked on via the canvas offsets
       e = pv.event
+      if not e.offsetX #ahem--FIREFOX--ahem
+        parent_position = self.$container.position()
+        e.offsetX = e.layerX - parent_position.left
+        e.offsetY = e.layerY - parent_position.top
       [i, j] = [e.offsetY, e.offsetX].map (offset) -> Math.floor offset / self.scale
       self.trigger 'dm_mousemove', {i: i, j: j}
 
